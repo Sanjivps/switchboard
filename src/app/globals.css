@@ -1,26 +1,175 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Switchboard design tokens.
+   Porcelain + navy, with amber indicator lamps as the one accent.
+   Status colours are information: pass, blocked, corrected, escalated. */
+
+@theme {
+  --color-porcelain: #eef1f4;
+  --color-paper: #f7f8fa;
+  --color-ink: #0e1a2b;
+  --color-slate: #5a6778;
+  --color-mist: #8a96a6;
+  --color-rule: #d5dbe3;
+  --color-console: #12233a;
+  --color-console-2: #1a2f4a;
+  --color-console-line: #2a4263;
+  --color-console-text: #c9d4e3;
+  --color-lamp: #f5a524;
+  --color-lamp-soft: #fde7b8;
+  --color-pass: #1e8a5a;
+  --color-pass-soft: #d9f0e4;
+  --color-block: #d2412f;
+  --color-block-soft: #fbe1dc;
+  --color-fix: #b7770a;
+  --color-fix-soft: #fcefd2;
+  --color-escalate: #2d6bdf;
+  --color-escalate-soft: #dfe8fb;
+
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --animate-lamp-on: lamp-on 420ms ease-out both;
+  --animate-rise: rise 360ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-blink: blink 1.4s ease-in-out infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@keyframes lamp-on {
+  0% { box-shadow: 0 0 0 0 currentColor; transform: scale(0.6); opacity: 0.2; }
+  60% { box-shadow: 0 0 14px 2px currentColor; transform: scale(1.12); opacity: 1; }
+  100% { box-shadow: 0 0 8px 0 currentColor; transform: scale(1); opacity: 1; }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+html {
+  color-scheme: light;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-porcelain);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "ss02";
+}
+
+::selection {
+  background: var(--color-lamp-soft);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-escalate);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+}
+
+/* Subtle dot grid used behind the console panels, like a patch-panel faceplate. */
+.faceplate {
+  background-color: var(--color-console);
+  background-image: radial-gradient(rgba(201, 212, 227, 0.09) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-console-line) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Buttons: a pressed-metal feel to match the console, not flat pills. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.75rem 1.5rem;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  transition: transform 120ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary {
+  color: white;
+  background: linear-gradient(180deg, #1d3150 0%, var(--color-ink) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 1px 2px rgba(14, 26, 43, 0.3), 0 8px 20px -10px rgba(14, 26, 43, 0.6);
+}
+.btn-primary:hover { background: linear-gradient(180deg, #24406a 0%, #13243b 100%); }
+.btn-secondary {
+  color: var(--color-ink);
+  background: white;
+  box-shadow: 0 0 0 1px var(--color-rule), 0 1px 2px rgba(14, 26, 43, 0.06);
+}
+.btn-secondary:hover { box-shadow: 0 0 0 1px var(--color-mist), 0 2px 6px rgba(14, 26, 43, 0.08); }
+.btn-lamp {
+  color: var(--color-console);
+  background: linear-gradient(180deg, #ffbe4a 0%, var(--color-lamp) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 0 24px -4px rgba(245, 165, 36, 0.55);
+}
+.btn-lamp:hover { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 0 32px -2px rgba(245, 165, 36, 0.7); }
+
+/* Hero atmosphere: a faint patch-panel grid fading out, and a lamp glow behind the console. */
+.hero-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: -1px 0 0;
+  background-image:
+    linear-gradient(to right, rgba(14, 26, 43, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 26, 43, 0.055) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 65% at 70% 40%, black 10%, transparent 75%);
+}
+.hero-backdrop::after {
+  content: "";
+  position: absolute;
+  width: 720px;
+  height: 720px;
+  right: -120px;
+  top: -80px;
+  background:
+    radial-gradient(circle at 45% 45%, rgba(45, 107, 223, 0.16), transparent 55%),
+    radial-gradient(circle at 60% 65%, rgba(245, 165, 36, 0.14), transparent 50%);
+  filter: blur(20px);
+}
+
+/* Product screenshot frame. */
+.browser-frame {
+  border-radius: 18px;
+  background: #e4e8ee;
+  box-shadow: 0 0 0 1px rgba(14, 26, 43, 0.1), 0 50px 100px -40px rgba(14, 26, 43, 0.45), 0 20px 40px -30px rgba(14, 26, 43, 0.3);
+}
+.fade-bottom {
+  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
 }
