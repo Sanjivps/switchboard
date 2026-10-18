@@ -2,6 +2,8 @@
 
 **An AI phone receptionist for service businesses, with its guardrails in code instead of in the prompt.**
 
+**Live:** https://switchboard-nine.vercel.app ([demo](https://switchboard-nine.vercel.app/demo), [agency dashboard](https://switchboard-nine.vercel.app/dashboard))
+
 Switchboard answers calls for plumbers, HVAC shops and electricians. It takes the caller's details, quotes from the price book, books an open slot, texts a confirmation and hands emergencies to a person. A language model (Claude) understands the caller. Code decides every price, booking, transfer and text.
 
 It's built for agencies that resell AI receptionists: one engine serves many client accounts, each defined by a config file, with a white-label dashboard across all of them.
